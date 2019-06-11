@@ -14,8 +14,5 @@ public class MessageService implements MessageServiceIf{
 		return null;
 	}
 
-	public List<Message> getFilteredMessages(Message message) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
 }
