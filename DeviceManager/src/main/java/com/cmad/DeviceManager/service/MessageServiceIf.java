@@ -8,5 +8,5 @@ public interface MessageServiceIf {
 	
 	public List<Message> getMessages();
 
-	
+	public Message addMessage(String deviceName, Message message);
 }

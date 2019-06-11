@@ -8,6 +8,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity(name = "message")
 public class Message {
 	@Id
@@ -16,10 +18,12 @@ public class Message {
 	
 	private String message;
 	private Integer severity;
+	@JsonIgnore
 	private Date lastUpdatedDate;
 	
 	@ManyToOne
 	@JoinColumn(name="deviceId", nullable=false)
+	@JsonIgnore
 	private Device device;
 	
 	public Integer getMessageId() {
