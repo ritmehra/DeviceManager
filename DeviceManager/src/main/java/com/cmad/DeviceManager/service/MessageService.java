@@ -1,5 +1,9 @@
 package com.cmad.DeviceManager.service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +25,9 @@ public class MessageService implements MessageServiceIf{
 	DeviceRepository deviceRepository;
 	
     public List<Message> getMessages() {
-		// TODO Auto-generated method stub
-		return null;
+		List<Message> messages = new ArrayList<Message>();
+		messages = messageRepository.findAll();
+		return messages;
 	}
 
 	public Message addMessage(String deviceName, Message message) {
@@ -34,6 +39,25 @@ public class MessageService implements MessageServiceIf{
 		message.setDevice(device);
         return messageRepository.save(message);
    }
+
+	@Override
+	public List<Message> getFilteredMessages(String deviceName, Integer severity) {
+		List<Message> messages = new ArrayList<Message>();
+		Device device = null;
+		
+		if(deviceName!=null) {
+			device = deviceRepository.findByDeviceName(deviceName);
+		}
+		
+		if(device!=null && severity!=null)
+			messages = messageRepository.findByDeviceAndSeverity(device, severity);
+		else if(device!=null)
+			messages = messageRepository.findByDevice(device);
+		else if(severity!=null)
+			messages = messageRepository.findBySeverity(severity);
+		
+		return messages;
+	}
 
 	
 }

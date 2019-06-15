@@ -1,5 +1,6 @@
 package com.cmad.DeviceManager.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,11 +10,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cmad.DeviceManager.Exception.DeviceNotFoundException;
 import com.cmad.DeviceManager.Exception.InvalidMessageException;
 import com.cmad.DeviceManager.domain.Message;
+import com.cmad.DeviceManager.dto.MessageDto;
 import com.cmad.DeviceManager.service.MessageServiceIf;
 
 
@@ -24,15 +26,39 @@ public class MessageController {
 	private MessageServiceIf messageService;
 
 	@GetMapping("/messages")
-	public List<Message> geMessages(@RequestBody Message message) throws DeviceNotFoundException{
+	public ResponseEntity<List<MessageDto>> geMessages(@RequestParam("deviceName") String deviceName, 
+			@RequestParam("severity") Integer severity){
 		
-		return null;
+		List<MessageDto> messageDtoList = new ArrayList<MessageDto>();
+		try {
+			List<Message> messages =null;
+			
+			if((deviceName != null && !deviceName.isEmpty()) || (severity!=null))
+				messages = messageService.getFilteredMessages(deviceName, severity);
+			else
+				messages = messageService.getMessages();
+			
+			for(Message message: messages) {
+				MessageDto messageDto = new MessageDto();
+				messageDto.setDeviceName(message.getDevice().getDeviceName());
+				messageDto.setMessage(message.getMessage());
+				messageDto.setSeverity(message.getSeverity());
+				messageDto.setLastUpdatedDate(message.getLastUpdatedDate());
+				
+				messageDtoList.add(messageDto);
+			}
+		    return new ResponseEntity<List<MessageDto>>(messageDtoList, HttpStatus.OK);
+		}catch(InvalidMessageException ime) {
+			return new ResponseEntity<List<MessageDto>>(messageDtoList, HttpStatus.BAD_REQUEST);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<List<MessageDto>>(messageDtoList, HttpStatus.INTERNAL_SERVER_ERROR);
+		}	
 	}
 	
 	@PostMapping("/device/{deviceName}/message")
 	public ResponseEntity<Message> postMessage(@PathVariable (value = "deviceName") String deviceName, @RequestBody Message message){
 		try {
-			System.out.println("deviceName:"+deviceName);
 			messageService.addMessage(deviceName,message);
 			return new ResponseEntity<Message>(message, HttpStatus.CREATED);
 		} catch (InvalidMessageException ime) {

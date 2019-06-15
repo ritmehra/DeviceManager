@@ -18,7 +18,6 @@ public class Message {
 	
 	private String message;
 	private Integer severity;
-	@JsonIgnore
 	private Date lastUpdatedDate;
 	
 	@ManyToOne
@@ -53,6 +52,7 @@ public class Message {
 	public Device getDevice() {
 		return device;
 	}
+	
 	public void setDevice(Device device) {
 		this.device = device;
 	}
