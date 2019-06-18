@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cmad.DeviceManager.Exception.DeviceNotFoundException;
 import com.cmad.DeviceManager.Exception.InvalidMessageException;
 import com.cmad.DeviceManager.domain.Message;
+import com.cmad.DeviceManager.dto.DeviceStatsDto;
 import com.cmad.DeviceManager.dto.MessageDto;
 import com.cmad.DeviceManager.service.MessageServiceIf;
 
@@ -54,6 +56,22 @@ public class MessageController {
 			e.printStackTrace();
 			return new ResponseEntity<List<MessageDto>>(messageDtoList, HttpStatus.INTERNAL_SERVER_ERROR);
 		}	
+	}
+	
+	@GetMapping("/device/stats")
+	public ResponseEntity<List<DeviceStatsDto>> getDeviceStats(@RequestParam("deviceName") String deviceName){
+		List<DeviceStatsDto> deviceStats = new ArrayList<DeviceStatsDto>();
+		
+		try {
+			deviceStats = messageService.getDeviceStats(deviceName);
+			return new ResponseEntity<List<DeviceStatsDto>>(deviceStats, HttpStatus.OK);
+		}catch(DeviceNotFoundException de) {
+			return new ResponseEntity<List<DeviceStatsDto>>(deviceStats, HttpStatus.BAD_REQUEST);
+		}catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<List<DeviceStatsDto>>(deviceStats, HttpStatus.INTERNAL_SERVER_ERROR);
+		}	
+		
 	}
 	
 	@PostMapping("/device/{deviceName}/message")

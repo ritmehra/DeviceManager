@@ -5,6 +5,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 import com.cmad.DeviceManager.Exception.DeviceNotFoundException;
 import com.cmad.DeviceManager.domain.Device;
 import com.cmad.DeviceManager.domain.Message;
+import com.cmad.DeviceManager.dto.DeviceStatsDto;
 import com.cmad.DeviceManager.repository.DeviceRepository;
 import com.cmad.DeviceManager.repository.MessageRepository;
 
@@ -57,6 +60,41 @@ public class MessageService implements MessageServiceIf{
 			messages = messageRepository.findBySeverity(severity);
 		
 		return messages;
+	}
+	
+	@Override
+	public List<DeviceStatsDto> getDeviceStats(String deviceName){
+		List<DeviceStatsDto> deviceStats = new ArrayList<DeviceStatsDto>();
+		SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+		
+		List<Device> deviceList = new ArrayList<Device>();
+		if(deviceName!=null && !deviceName.isEmpty()) {
+			Device device = deviceRepository.findByDeviceName(deviceName);
+			if(device==null)
+				throw new DeviceNotFoundException();
+			deviceList.add(device);
+		}else
+			deviceList = deviceRepository.findAll();
+		
+		for(Device device: deviceList) {
+			List<Message> messageList = device.getMessages();
+			Map<String,Integer> dateMap = new TreeMap<String, Integer>();
+			for(Message message:messageList) {
+				Date d = message.getLastUpdatedDate();
+				String dStr = dateFormat.format(d);
+				if(dateMap.containsKey(dStr))
+					dateMap.put(dStr, dateMap.get(dStr)+1);
+				else
+					dateMap.put(dStr, 1);
+			}
+			DeviceStatsDto deviceStatsDto = new DeviceStatsDto();
+			deviceStatsDto.setDeviceName(device.getDeviceName());
+			deviceStatsDto.setMessageCount(dateMap);
+			
+			deviceStats.add(deviceStatsDto);
+		}
+		
+		return deviceStats;
 	}
 
 	
