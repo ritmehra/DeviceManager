@@ -18,6 +18,7 @@ import com.cmad.DeviceManager.Exception.InvalidMessageException;
 import com.cmad.DeviceManager.domain.Message;
 import com.cmad.DeviceManager.dto.DeviceStatsDto;
 import com.cmad.DeviceManager.dto.MessageDto;
+import com.cmad.DeviceManager.dto.MessageStatsDto;
 import com.cmad.DeviceManager.service.MessageServiceIf;
 
 
@@ -71,6 +72,23 @@ public class MessageController {
 			e.printStackTrace();
 			return new ResponseEntity<List<DeviceStatsDto>>(deviceStats, HttpStatus.INTERNAL_SERVER_ERROR);
 		}	
+		
+	}
+	
+	@GetMapping("/message/stats")
+	public ResponseEntity<List<MessageStatsDto>> getMessageStats(@RequestParam("deviceName") String deviceName,
+			@RequestParam("severity") Integer severity){
+		List<MessageStatsDto> messageStats = new ArrayList<MessageStatsDto>();
+		
+		try {
+			messageStats = messageService.getMessageStats(deviceName, severity);
+			return new ResponseEntity<List<MessageStatsDto>>(messageStats, HttpStatus.OK);
+		}catch(DeviceNotFoundException de) {
+			return new ResponseEntity<List<MessageStatsDto>>(messageStats, HttpStatus.BAD_REQUEST);
+		}catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<List<MessageStatsDto>>(messageStats, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 		
 	}
 	

@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -15,6 +16,7 @@ import com.cmad.DeviceManager.Exception.DeviceNotFoundException;
 import com.cmad.DeviceManager.domain.Device;
 import com.cmad.DeviceManager.domain.Message;
 import com.cmad.DeviceManager.dto.DeviceStatsDto;
+import com.cmad.DeviceManager.dto.MessageStatsDto;
 import com.cmad.DeviceManager.repository.DeviceRepository;
 import com.cmad.DeviceManager.repository.MessageRepository;
 
@@ -95,6 +97,58 @@ public class MessageService implements MessageServiceIf{
 		}
 		
 		return deviceStats;
+	}
+	
+	@Override
+	public List<MessageStatsDto> getMessageStats(String deviceName, Integer severity){
+		List<MessageStatsDto> messageStats = new ArrayList<MessageStatsDto>();
+		
+		if(deviceName!=null && !deviceName.isEmpty()) {
+			Device device = deviceRepository.findByDeviceName(deviceName);
+			if(device==null)
+				throw new DeviceNotFoundException();
+			
+			if(severity!=null) {
+				List<Message> messages = messageRepository.findByDeviceAndSeverity(device, severity);
+			    MessageStatsDto messageDto = new MessageStatsDto();
+		 	    messageDto.setSeverity(severity);
+		 	    messageDto.setMessageCount(messages.size());
+		 	    
+		 	    messageStats.add(messageDto);
+		        	
+			}else {
+				List<Integer> severityList = messageRepository.findDistinctSeverity();
+				for(Integer sev: severityList) {
+					List<Message> messages = messageRepository.findByDeviceAndSeverity(device, sev);
+					MessageStatsDto messageDto = new MessageStatsDto();
+			 	    messageDto.setSeverity(sev);
+			 	    messageDto.setMessageCount(messages.size());
+			 	    
+			 	    messageStats.add(messageDto);
+				}
+				
+			}
+		}else {
+			List<Message> messages = null;
+			List<Integer> severityList = null;
+			System.out.println("severity:"+severity);
+			if(severity!=null) {
+				severityList = new ArrayList<Integer>();
+				severityList.add(severity);
+			}else
+				severityList = messageRepository.findDistinctSeverity();
+			
+			System.out.println("severityList:"+severityList);
+			for(Integer sev: severityList) {
+			    	messages = messageRepository.findBySeverity(sev);
+				    MessageStatsDto messageDto = new MessageStatsDto();
+		 	        messageDto.setSeverity(sev);
+		 	        messageDto.setMessageCount(messages.size());
+		 	        messageStats.add(messageDto);
+			}
+		}
+		
+		return messageStats;
 	}
 
 	
