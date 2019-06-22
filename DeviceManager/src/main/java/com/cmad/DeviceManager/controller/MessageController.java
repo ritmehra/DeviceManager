@@ -1,11 +1,13 @@
 package com.cmad.DeviceManager.controller;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,6 +25,7 @@ import com.cmad.DeviceManager.service.MessageServiceIf;
 
 
 @RestController
+@CrossOrigin
 public class MessageController {
 	
 	@Autowired
@@ -33,6 +36,7 @@ public class MessageController {
 			@RequestParam("severity") Integer severity){
 		
 		List<MessageDto> messageDtoList = new ArrayList<MessageDto>();
+		SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
 		try {
 			List<Message> messages =null;
 			
@@ -46,7 +50,7 @@ public class MessageController {
 				messageDto.setDeviceName(message.getDevice().getDeviceName());
 				messageDto.setMessage(message.getMessage());
 				messageDto.setSeverity(message.getSeverity());
-				messageDto.setLastUpdatedDate(message.getLastUpdatedDate());
+				messageDto.setLastUpdatedDate(dateFormat.format(message.getLastUpdatedDate()));
 				
 				messageDtoList.add(messageDto);
 			}

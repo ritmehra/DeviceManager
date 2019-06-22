@@ -131,14 +131,14 @@ public class MessageService implements MessageServiceIf{
 		}else {
 			List<Message> messages = null;
 			List<Integer> severityList = null;
-			System.out.println("severity:"+severity);
+			
 			if(severity!=null) {
 				severityList = new ArrayList<Integer>();
 				severityList.add(severity);
 			}else
 				severityList = messageRepository.findDistinctSeverity();
 			
-			System.out.println("severityList:"+severityList);
+			
 			for(Integer sev: severityList) {
 			    	messages = messageRepository.findBySeverity(sev);
 				    MessageStatsDto messageDto = new MessageStatsDto();

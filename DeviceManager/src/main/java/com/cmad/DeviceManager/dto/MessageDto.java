@@ -1,13 +1,11 @@
 package com.cmad.DeviceManager.dto;
 
-import java.util.Date;
-
 public class MessageDto {
 	
 	private String message;
 	private String deviceName;
 	private Integer severity;
-	private Date lastUpdatedDate;
+	private String lastUpdatedDate;
 	public String getMessage() {
 		return message;
 	}
@@ -26,10 +24,10 @@ public class MessageDto {
 	public void setSeverity(Integer severity) {
 		this.severity = severity;
 	}
-	public Date getLastUpdatedDate() {
+	public String getLastUpdatedDate() {
 		return lastUpdatedDate;
 	}
-	public void setLastUpdatedDate(Date lastUpdatedDate) {
+	public void setLastUpdatedDate(String lastUpdatedDate) {
 		this.lastUpdatedDate = lastUpdatedDate;
 	}
 
