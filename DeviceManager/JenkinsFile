@@ -27,7 +27,7 @@ pipeline{
             }
             steps{
                 echo 'running unit tests on worker app'
-                dir('worker'){
+                dir('DeviceManager'){
                   sh 'mvn clean test'
                 }
             }
