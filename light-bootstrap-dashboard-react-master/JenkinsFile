@@ -3,14 +3,14 @@ pipeline{
     agent any
 	
 	tools{
-	  nodejs 'NodeJS 8.9.0'
+	  nodejs 'NodeJS 1.3.3'
     }
 	
     stages{
         stage('build'){
             steps{
                 echo 'this is build step'
-				dir('result'){
+				dir('light-bootstrap-dashboard-react-master'){
                   sh 'npm install'
 				  sh 'npm ls'
 				}
@@ -19,7 +19,7 @@ pipeline{
         stage('test'){
             steps{
                 echo 'this is test stage'
-                dir('result'){
+                dir('light-bootstrap-dashboard-react-master'){
                   sh 'npm test'
 				}
             } 
