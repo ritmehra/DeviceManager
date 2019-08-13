@@ -56,7 +56,7 @@ class Dashboard extends Component {
     let sParam = severityParam;
     if(sParam == undefined)
        sParam = '';
-    fetch("http://35.165.202.83:3306/messages?deviceName="+dParam+"&severity="+sParam)
+    fetch("http://messaging-loadbalancer-2023474556.us-west-2.elb.amazonaws.com:3306/messages?deviceName="+dParam+"&severity="+sParam)
       .then(res => res.json())
       .then(
         (result) => {
@@ -83,7 +83,7 @@ class Dashboard extends Component {
     let deviceName = deviceParam;
     if(deviceName==undefined)
        deviceName=''
-    fetch("http://35.165.202.83:3306/device/stats?deviceName="+deviceName)
+    fetch("http://messaging-loadbalancer-2023474556.us-west-2.elb.amazonaws.com:3306/device/stats?deviceName="+deviceName)
       .then(res => res.json())
       .then(
         (result) => {
@@ -140,7 +140,7 @@ class Dashboard extends Component {
     if(sParam == undefined)
        sParam = '';
 
-    fetch("http://35.165.202.83:3306/message/stats?deviceName="+dParam+"&severity="+sParam)
+    fetch("http://messaging-loadbalancer-2023474556.us-west-2.elb.amazonaws.com:3306/message/stats?deviceName="+dParam+"&severity="+sParam)
       .then(res => res.json())
       .then(
         (result) => {
