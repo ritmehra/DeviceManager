@@ -13,12 +13,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.cmad.DeviceManager.Exception.DeviceNotFoundException;
+import com.cmad.DeviceManager.domain.ApplicationUser;
 import com.cmad.DeviceManager.domain.Device;
 import com.cmad.DeviceManager.domain.Message;
 import com.cmad.DeviceManager.dto.DeviceStatsDto;
 import com.cmad.DeviceManager.dto.MessageStatsDto;
 import com.cmad.DeviceManager.repository.DeviceRepository;
 import com.cmad.DeviceManager.repository.MessageRepository;
+
 
 @Service
 public class MessageService implements MessageServiceIf{
@@ -29,9 +31,19 @@ public class MessageService implements MessageServiceIf{
 	@Autowired
 	DeviceRepository deviceRepository;
 	
-    public List<Message> getMessages() {
+	public List<Message> getMessages(ApplicationUser user) {
 		List<Message> messages = new ArrayList<Message>();
-		messages = messageRepository.findAll();
+		if(user.getUserName().equalsIgnoreCase("admin"))
+			messages = messageRepository.findAll();
+		else {
+			String device = user.getDevices();
+			Device deviceObj = deviceRepository.findByDeviceId(Integer.parseInt(device));
+			if(deviceObj==null)
+				throw new DeviceNotFoundException();
+			
+			messages = getFilteredMessages(deviceObj.getDeviceName(), null);
+		}
+		
 		return messages;
 	}
 
@@ -65,18 +77,30 @@ public class MessageService implements MessageServiceIf{
 	}
 	
 	@Override
-	public List<DeviceStatsDto> getDeviceStats(String deviceName){
+	public List<DeviceStatsDto> getDeviceStats(ApplicationUser user,String deviceName){
 		List<DeviceStatsDto> deviceStats = new ArrayList<DeviceStatsDto>();
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
 		
 		List<Device> deviceList = new ArrayList<Device>();
-		if(deviceName!=null && !deviceName.isEmpty()) {
-			Device device = deviceRepository.findByDeviceName(deviceName);
-			if(device==null)
-				throw new DeviceNotFoundException();
-			deviceList.add(device);
-		}else
+		
+		if(user.getUserName().equalsIgnoreCase("admin"))
 			deviceList = deviceRepository.findAll();
+		else {
+		    String userDevice = user.getDevices();
+		    
+		    if(deviceName!=null && !deviceName.isEmpty()) {
+				Device device = deviceRepository.findByDeviceName(deviceName);
+				if(device==null)
+					throw new DeviceNotFoundException();
+				deviceList.add(device);
+			}else {
+				Device device = deviceRepository.findByDeviceId(Integer.parseInt(userDevice));
+				if(device==null)
+					throw new DeviceNotFoundException();
+				deviceList.add(device);
+			}
+		    
+		}
 		
 		for(Device device: deviceList) {
 			List<Message> messageList = device.getMessages();
@@ -100,11 +124,15 @@ public class MessageService implements MessageServiceIf{
 	}
 	
 	@Override
-	public List<MessageStatsDto> getMessageStats(String deviceName, Integer severity){
+	public List<MessageStatsDto> getMessageStats(ApplicationUser user, String deviceName, Integer severity){
 		List<MessageStatsDto> messageStats = new ArrayList<MessageStatsDto>();
 		
-		if(deviceName!=null && !deviceName.isEmpty()) {
-			Device device = deviceRepository.findByDeviceName(deviceName);
+		if((deviceName!=null && !deviceName.isEmpty()) || !user.getUserName().equalsIgnoreCase("admin")) {
+			Device device;
+			if(deviceName!=null && !deviceName.isEmpty())
+				device= deviceRepository.findByDeviceName(deviceName);
+			else
+				device = deviceRepository.findByDeviceId(Integer.parseInt(user.getDevices()));
 			if(device==null)
 				throw new DeviceNotFoundException();
 			

@@ -9,5 +9,7 @@ import com.cmad.DeviceManager.domain.Device;
 public interface DeviceRepository extends JpaRepository<Device, Integer>{
 	
 	public Device findByDeviceName(String name);
+	
+	public Device findByDeviceId(Integer device);
 
 }
