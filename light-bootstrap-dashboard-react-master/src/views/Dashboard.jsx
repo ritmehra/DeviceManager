@@ -10,6 +10,8 @@ import {
   responsiveSales,
   } from "variables/Variables.jsx";
 
+import { authenticationService } from 'services/authentication.service.js';
+
 class Dashboard extends Component {
   constructor(props) {
     super(props);
@@ -20,6 +22,8 @@ class Dashboard extends Component {
     this.state = {
       error: null,
       isLoaded: false,
+	  currentUser:null,
+	  accessToken:'',
       deviceName :'',
       severity :'',
       dPie: {
@@ -44,6 +48,9 @@ class Dashboard extends Component {
     };
   }
   componentDidMount() {
+	this.state.accessToken = authenticationService.currentUserValue;
+	console.log("Inside dashboard ....user :"+authenticationService.currentUserValue);
+	
     this.fetchMessageStatistics();
     this.fetchDeviceStatistics();
     this.fetchMessageList();
@@ -56,7 +63,11 @@ class Dashboard extends Component {
     let sParam = severityParam;
     if(sParam == undefined)
        sParam = '';
-    fetch("http://messaging-loadbalancer-2023474556.us-west-2.elb.amazonaws.com:3306/messages?deviceName="+dParam+"&severity="+sParam)
+    fetch("http://messaging-loadbalancer-2023474556.us-west-2.elb.amazonaws.com:8080/messages?deviceName="+dParam+"&severity="+sParam, {
+	       headers:{
+			   authorization: this.state.accessToken
+           }			   
+	   })
       .then(res => res.json())
       .then(
         (result) => {
@@ -83,7 +94,11 @@ class Dashboard extends Component {
     let deviceName = deviceParam;
     if(deviceName==undefined)
        deviceName=''
-    fetch("http://messaging-loadbalancer-2023474556.us-west-2.elb.amazonaws.com:3306/device/stats?deviceName="+deviceName)
+    fetch("http://messaging-loadbalancer-2023474556.us-west-2.elb.amazonaws.com:8080/device/stats?deviceName="+deviceName,{
+	       headers:{
+			   authorization: this.state.accessToken
+           }			   
+	   })
       .then(res => res.json())
       .then(
         (result) => {
@@ -140,7 +155,11 @@ class Dashboard extends Component {
     if(sParam == undefined)
        sParam = '';
 
-    fetch("http://messaging-loadbalancer-2023474556.us-west-2.elb.amazonaws.com:3306/message/stats?deviceName="+dParam+"&severity="+sParam)
+    fetch("http://messaging-loadbalancer-2023474556.us-west-2.elb.amazonaws.com:8080/message/stats?deviceName="+dParam+"&severity="+sParam,{
+	       headers:{
+			   authorization: this.state.accessToken
+           }			   
+	   })
       .then(res => res.json())
       .then(
         (result) => {

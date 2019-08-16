@@ -30,7 +30,7 @@ class Admin extends Component {
       if (prop.layout === "/admin") {
         return (
           <Route
-            path={prop.layout + prop.path}
+            path={"/"}
             render={props => (
               <prop.component
                 {...props}
