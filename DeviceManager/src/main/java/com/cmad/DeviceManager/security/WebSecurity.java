@@ -50,6 +50,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
     CorsConfiguration corsConfig = new CorsConfiguration();
     corsConfig.applyPermitDefaultValues();
     corsConfig.addExposedHeader("authHeader");
+	corsConfig.addExposedHeader("access-control-allow-origin");
     source.registerCorsConfiguration("/**", corsConfig);
     
     return source;
