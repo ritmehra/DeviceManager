@@ -30,5 +30,12 @@ public class DeviceController {
 			return new ResponseEntity<Device>(device, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
+	@GetMapping("/index")
+	public ResponseEntity<String> indexPage(){
+		
+		System.out.println("Hitting index page");
+		return new ResponseEntity<String>("ALL OK", HttpStatus.OK);
+	}
 
 }
