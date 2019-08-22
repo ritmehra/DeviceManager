@@ -83,9 +83,15 @@ public class MessageService implements MessageServiceIf{
 		
 		List<Device> deviceList = new ArrayList<Device>();
 		
-		if(user.getUserName().equalsIgnoreCase("admin"))
-			deviceList = deviceRepository.findAll();
-		else {
+		if(user.getUserName().equalsIgnoreCase("admin")) {
+			if(deviceName!=null && !deviceName.isEmpty()) {
+				Device device =  deviceRepository.findByDeviceName(deviceName);
+				if(device==null)
+					throw new DeviceNotFoundException();
+				deviceList.add(device);
+			}else
+				deviceList = deviceRepository.findAll();
+		}else {
 		    String userDevice = user.getDevices();
 		    
 		    if(deviceName!=null && !deviceName.isEmpty()) {
